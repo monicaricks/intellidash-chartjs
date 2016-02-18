@@ -104,6 +104,39 @@ $(document).ready(function(){
     }
   };
 
-  // Delete this comment: Perhaps this is where we should make our GET request?
+  $.get('https://www.batchacademy.com/api/wdfne/dummy/intellidash', function(responseData){
+
+    //GENDER CHART
+
+    var femaleCounter = 0;
+    var maleCounter = 0;
+    for(var i = 0; i <responseData.length; i++){
+      if(responseData[i].person.gender === 'F'){
+        femaleCounter++;
+      }
+      else {
+        maleCounter++;
+      }
+    }
+    //console.log(generateChart.gender.chartData[0].value(maleCounter));
+    //generateChart.gender.chartData[0].value(maleCounter)
+    //generateChart.gender.chartData[1].value(femaleCounter);
+    console.log(generateChart.gender);
+    generateChart.gender(responseData);
+
+
+
+    //ORDER TIMELINE
+    generateChart.orderTimeline(responseData);
+    
+
+    //ORDER CATEGORY
+    generateChart.orderCategory(responseData);
+
+
+
+    //ORDER TOTAL
+    generateChart.orderTotal(responseData);
+  });
 
 });
