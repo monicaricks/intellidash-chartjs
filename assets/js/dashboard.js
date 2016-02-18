@@ -112,16 +112,20 @@ $(document).ready(function(){
     var maleCounter = 0;
     for(var i = 0; i <responseData.length; i++){
       if(responseData[i].person.gender === 'F'){
-        femaleCounter++;
+        chartData[0].value++;
+        //femaleCounter++;
       }
       else {
-        maleCounter++;
+        chartData[1].value++;
+        //maleCounter++;
       }
     }
     //console.log(generateChart.gender.chartData[0].value(maleCounter));
     //generateChart.gender.chartData[0].value(maleCounter)
     //generateChart.gender.chartData[1].value(femaleCounter);
-    console.log(generateChart.gender);
+    //console.log(generateChart.gender.function(femaleCounter));
+    console.log(chartData[0].value);
+    console.log(chartData[1].value);
     generateChart.gender(responseData);
 
 
