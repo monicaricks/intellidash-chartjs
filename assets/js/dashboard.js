@@ -17,9 +17,21 @@ $(document).ready(function(){
         }
       ];
 
+      var maleObj = chartData[0];
+      var femaleObj = chartData[1];
+
+      for(var i = 0; i < data.length; i++){
+        var order = data[i];
+        if(order.person.gender === 'F'){
+          femaleObj.value++;
+        } else {
+          maleObj.value++
+        }
+      }
+      var ctx = $('.gender canvas').get(0).getContext("2d");
+      var genderPieChart = new Chart(ctx).Pie(chartData);
     },
     orderTotal: function(data){
-
       var ranges = {
         '0-14': 0,
         '15-49': 0,
@@ -28,19 +40,37 @@ $(document).ready(function(){
         '200-299': 0
       };
 
+      for(var i = 0; i < data.length; i++){
+        var purchase = data[i];
+        if(purchase.order.total <= 14) {
+          ranges['0-14']++;
+        }else if(purchase.order.total <= 49 && purchase.order.total >= 15){
+          ranges['15-49']++;
+        }else if(purchase.order.total <= 99 && purchase.order.total >= 50){
+          ranges['50-99']++;
+        }else if(purchase.order.total <= 199 && purchase.order.total >= 100){
+          ranges['100-199']++;
+        }else if(purchase.order.total <= 299 && purchase.order.total >= 200){
+          ranges['200-299']++;
+        }
+      }
+
       var chartData = {
-        labels: [] /* What should these labels be? */ ,
+        labels: ['0-14','15-49','50-99','100-199','200-299'] /* What should these labels be? */ ,
         datasets: [
           {
             fillColor: "rgba(0,127,255,0.4)",
             strokeColor: "rgba(0,127,255,0.8)",
             highlightFill: "rgba(0,127,255,0.8)",
             highlightStroke: "rgba(0,127,255,0.4)",
-            data: [] /* How do we organize this data ? */
+            data: [ranges['0-14'], ranges['15-49'], ranges['50-99'], ranges['100-199'], ranges['200-299']] /* How do we organize this data ? */
           }
         ]
       };
 
+      
+      var ctx = $('.order-total canvas').get(0).getContext("2d");
+      var orderTotalBarChart = new Chart(ctx).Bar(chartData);
     },
     orderCategory: function(data){
 
@@ -83,11 +113,48 @@ $(document).ready(function(){
         }
       };
 
+      for(var i = 0; i < data.length; i++){
+        var purchase = data[i];
+        if(purchase.order.category === 'belt'){
+          categories['belt'].value++;
+        }else if(purchase.order.category === 'shirt'){
+          categories['shirt'].value++;
+        }else if(purchase.order.category === 'pant'){
+          categories['pant'].value++;
+        }else if(purchase.order.category === 'footwear'){
+          categories['footwear'].value++;
+        }else if(purchase.order.category === 'jewelry'){
+          categories['jewelry'].value++;
+        }else if(purchase.order.category === 'jacket'){
+          categories['jacket'].value++;
+        }
+      }
+      var ctx = $('.order-category canvas').get(0).getContext("2d");
+      var orderCategoryPieChart = new Chart(ctx).Pie(categories);
     },
     orderTimeline: function(data){
+      var quarters = [ 0,0,0,0];
+
+      for(var i = 0; i < data.length; i++){
+        var purchase = data[i];
+        var month = Number(purchase.order.date.split('/')[0]);
+        if(month <= 3){
+          quarters[0]++;
+        }else if(month <= 6){
+          quarters[1]++;
+        }else if(month <= 9){
+          quarters[2]++;
+        }else{
+          quarters[3]++;
+        }
+      }
+      console.log(quarters[0]);
+      console.log(quarters[1]);
+      console.log(quarters[2]);
+      console.log(quarters[3]);
 
       var chartData = {
-        labels: [] /* What should these labels be? */ ,
+        labels: ['Q1','Q2', 'Q3','Q4'] /* What should these labels be? */ ,
         datasets: [
           {
             fillColor: "rgba(0,127,255,0.2)",
@@ -96,49 +163,24 @@ $(document).ready(function(){
             pointStrokeColor: "#fff",
             pointHighlightFill: "#fff",
             pointHighlightStroke: "rgba(0,127,255,1)",
-            data: [] /* How do we organize this data? */
+            data: [quarters[0], quarters[1], quarters[2], quarters[3]] /* How do we organize this data? */
           }
         ]
       };
-
+      var ctx = $('.order-timeline canvas').get(0).getContext("2d");
+      var orderTimelineLineChart = new Chart(ctx).Line(chartData);
     }
   };
 
   $.get('https://www.batchacademy.com/api/wdfne/dummy/intellidash', function(responseData){
-
+    //
+    console.log(responseData);
     //GENDER CHART
-
-    var femaleCounter = 0;
-    var maleCounter = 0;
-    for(var i = 0; i <responseData.length; i++){
-      if(responseData[i].person.gender === 'F'){
-        chartData[0].value++;
-        //femaleCounter++;
-      }
-      else {
-        chartData[1].value++;
-        //maleCounter++;
-      }
-    }
-    //console.log(generateChart.gender.chartData[0].value(maleCounter));
-    //generateChart.gender.chartData[0].value(maleCounter)
-    //generateChart.gender.chartData[1].value(femaleCounter);
-    //console.log(generateChart.gender.function(femaleCounter));
-    console.log(chartData[0].value);
-    console.log(chartData[1].value);
     generateChart.gender(responseData);
-
-
-
     //ORDER TIMELINE
     generateChart.orderTimeline(responseData);
-    
-
     //ORDER CATEGORY
     generateChart.orderCategory(responseData);
-
-
-
     //ORDER TOTAL
     generateChart.orderTotal(responseData);
   });
